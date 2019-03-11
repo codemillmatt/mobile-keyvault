@@ -10,11 +10,11 @@ using KeyVault;
 //[assembly: Xamarin.Forms.Dependency(typeof(DataService))]
 namespace KeyVault
 {
-    public class DataService : IDataService
+    public class DataFromTableService : IDataService
     {
         public async Task<List<TopSecret>> GetSecretData()
         {
-            var creds = new StorageCredentials("kvmobilestorage", "CCUiQLEzes7E9CG8y4odJsipjn4SWqBBMGSfczbe32ds75l5R6wDAESa09a9rtANpSVOKkJtcWMbZB549SfLxg==");
+            var creds = new StorageCredentials("kvmobilestorage", "YOUR KEY HERE!");
             var cloudStorAcct = new CloudStorageAccount(creds, "core.windows.net", true);
 
             var tableClient = cloudStorAcct.CreateCloudTableClient();
