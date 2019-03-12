@@ -1,0 +1,130 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "overallResourceLocation" : {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "function_name": {
+            "defaultValue": "mobiledont",
+            "type": "string"
+        },
+        "keyvault_name": {
+            "defaultValue": "MobileDont",
+            "type": "string"
+        },        
+        "storageAccount_name": {
+            "defaultValue": "kvmobilestorage",
+            "type": "string"
+        },
+        "tenant_id": {
+            "defaultValue":"",
+            "type":"string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "name": "[parameters('keyvault_name')]",
+            "apiVersion": "2018-02-14",
+            "location": "[parameters('overallResourceLocation')]",                                
+            "properties": {
+                "tenantId":"[parameters('tenant_id')]",
+                "sku": {
+                    "family": "A",
+                    "name": "standard"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_RAGRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "name": "[parameters('storageAccount_name')]",
+            "apiVersion": "2018-07-01",
+            "location": "[parameters('overallResourceLocation')]",                                    
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": false,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "enabled": true
+                        },
+                        "blob": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "sku": {
+                "name": "Y1",
+                "tier": "Dynamic",
+                "size": "Y1",
+                "family": "Y",
+                "capacity": 0
+            },
+            "kind": "functionapp",
+            "name": "serverfarmplanname",
+            "apiVersion": "2016-09-01",
+            "location": "West US 2",
+            "scale": null,
+            "properties": {
+                "name": "serverfarmplanname"
+            },
+            "dependsOn": []
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "kind": "functionapp",
+            "name": "[parameters('function_name')]",
+            "apiVersion": "2016-08-01",
+            "location": "[parameters('overallResourceLocation')]",            
+            "scale": null,
+            "properties": {
+                "enabled": true,                
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', 'serverfarmplanname')]",                
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', 'serverfarmplanname']"
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "name": "[concat(parameters('function_name'), '/', 'web')]",
+            "apiVersion": "2016-08-01",
+            "location": "West US 2",
+            "scale": null,
+            "properties": {                
+                "netFrameworkVersion": "v4.0",
+                "phpVersion": "5.6",
+                "pythonVersion": "",
+                "nodeVersion": "",
+                "linuxFxVersion": "",                
+                "publishingUsername": "$mobiledont"                
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('function_name'))]"
+            ]
+        }
+    ]
+}
