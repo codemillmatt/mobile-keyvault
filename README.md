@@ -9,6 +9,7 @@ And I aim to show you how to do just that with this sample!
 So ... if you want to follow along, step by step - go ahead and create a [free Azure subscription here](https://azure.microsoft.com/free?WT.mc_id=keyvaultmobiledont-github-masoucou), if you don't already have one.
 
 Hit this button and all the resources will be deployed for you!
+
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
 
 You'll still have to deploy the Functions app. So go ahead and clone this repo. All of the Functions code can be found in the `src\functions` folder. Build it and and follow [these instructions](https://docs.microsoft.com/azure/azure-functions/deployment-zip-push?WT.mc_id=keyvaultmobiledont-github-masoucou) to deploy it to the Functions app you created above.
