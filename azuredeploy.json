@@ -10,20 +10,30 @@
             "defaultValue": "MobileDont",
             "type": "string"
         },        
-        "storageAccount_name": {
+        "storageAcct_name": {
             "defaultValue": "kvmobilestorage",
             "type": "string"
+        },
+        "appSvcPlan_name": {
+            "defaultValue": "mobiledontsvc",
+            "type":"string",
+            "metadata": {
+                "description":"Name of Functions App Service Plan"
+            }
         }
     },
-    "variables": {},
+    "variables": {
+        "overallResourceLocation":"[resourceGroup().location]",
+        "tenantId":"[subscription().tenantId]"        
+    },
     "resources": [
         {
             "type": "Microsoft.KeyVault/vaults",
             "name": "[parameters('keyvault_name')]",
             "apiVersion": "2018-02-14",
-            "location": "[parameters('overallResourceLocation')]",                                
+            "location": "[variables('overallResourceLocation')]",                                
             "properties": {
-                "tenantId":"[subscription().tenantId]",
+                "tenantId":"[variables('tenantId')]",
                 "sku": {
                     "family": "A",
                     "name": "standard"
@@ -38,9 +48,9 @@
                 "tier": "Standard"
             },
             "kind": "StorageV2",
-            "name": "[parameters('storageAccount_name')]",
+            "name": "[parameters('storageAcct_name')]",
             "apiVersion": "2018-07-01",
-            "location": "[resourceGroup().location]",                                    
+            "location": "[variables('overallResourceLocation')]",                                    
             "properties": {
                 "networkAcls": {
                     "bypass": "AzureServices",
@@ -73,12 +83,12 @@
                 "capacity": 0
             },
             "kind": "functionapp",
-            "name": "serverfarmplanname",
+            "name": "[parameters('appSvcPlan_name')]",
             "apiVersion": "2016-09-01",
-            "location": "West US 2",
+            "location": "[variables('overallResourceLocation')]",
             "scale": null,
             "properties": {
-                "name": "serverfarmplanname"
+                "name": "[parameters('appSvcPlan_name')]"
             },
             "dependsOn": []
         },
@@ -87,32 +97,14 @@
             "kind": "functionapp",
             "name": "[parameters('function_name')]",
             "apiVersion": "2016-08-01",
-            "location": "[resourceGroup().location]",            
+            "location": "[variables('overallResourceLocation')]",            
             "scale": null,
             "properties": {
                 "enabled": true,                
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', 'serverfarmplanname')]",                
+                "serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('appSvcPlan_name'))]"              
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', 'serverfarmplanname']"
-            ]
-        },
-        {
-            "type": "Microsoft.Web/sites/config",
-            "name": "[concat(parameters('function_name'), '/', 'web')]",
-            "apiVersion": "2016-08-01",
-            "location": "West US 2",
-            "scale": null,
-            "properties": {                
-                "netFrameworkVersion": "v4.0",
-                "phpVersion": "5.6",
-                "pythonVersion": "",
-                "nodeVersion": "",
-                "linuxFxVersion": "",                
-                "publishingUsername": "$mobiledont"                
-            },
-            "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('function_name'))]"
+                "[resourceId('Microsoft.Web/serverfarms/', parameters('appSvcPlan_name'))]"
             ]
         }
     ]
