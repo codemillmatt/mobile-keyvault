@@ -20,20 +20,33 @@
             "metadata": {
                 "description":"Name of Functions App Service Plan"
             }
-        }
+        },
+        "objectId": {
+            "type": "string",
+            "metadata": {
+              "description": "Specifies the object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. Get it by using Get-AzADUser or Get-AzADServicePrincipal cmdlets."
+            }
+          }        
     },
     "variables": {
         "overallResourceLocation":"[resourceGroup().location]",
         "tenantId":"[subscription().tenantId]"        
     },
-    "resources": [
+    "resources": [        
         {
             "type": "Microsoft.KeyVault/vaults",
             "name": "[parameters('keyvault_name')]",
             "apiVersion": "2018-02-14",
-            "location": "[variables('overallResourceLocation')]",                                
+            "location": "[variables('overallResourceLocation')]",                                         
             "properties": {
-                "tenantId":"[variables('tenantId')]",
+                "tenantId":"[variables('tenantId')]",   
+                "accessPolicies": [
+                    {
+                        "tenantId":"[variables('tenantId')]",
+                        "objectId": "[parameters('objectId')]",
+                        "permissions":{}                                             
+                    }
+                ],
                 "sku": {
                     "family": "A",
                     "name": "standard"
