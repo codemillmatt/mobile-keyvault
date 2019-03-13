@@ -1,16 +1,23 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {        
-        "function_name": {
+    "parameters": {
+        "prefix": {
+            "defaultValue": "u1xb",
+            "type":"string",
+            "metadata": {
+                "description":"This value will be prefixed to all resource names in order to keep them globally unique."
+            }
+        },     
+        "func_name": {
             "defaultValue": "mobiledont",
             "type": "string"
         },
-        "keyvault_name": {
+        "vault_name": {
             "defaultValue": "MobileDont",
             "type": "string"
         },        
-        "storageAcct_name": {
+        "storage_name": {
             "defaultValue": "kvmobilestorage",
             "type": "string"
         },
@@ -20,22 +27,21 @@
             "metadata": {
                 "description":"Name of Functions App Service Plan"
             }
-        },
-        "objectId": {
-            "type": "string",
-            "metadata": {
-              "description": "Specifies the object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. Get it by using Get-AzADUser or Get-AzADServicePrincipal cmdlets."
-            }
-          }        
+        }    
     },
     "variables": {
         "overallResourceLocation":"[resourceGroup().location]",
-        "tenantId":"[subscription().tenantId]"        
+        "tenantId":"[subscription().tenantId]",
+        "objectId":"526a0d24-1226-4484-83cb-c16053aefc72",
+        "function_name":"[concat(parameters('prefix'), parameters('func_name'))]",
+        "keyvault_name":"[concat(parameters('prefix'), parameters('vault_name'))]",
+        "storageAcct_name":"[concat(parameters('prefix'), parameters('storage_name'))]",
+        "storageAccountid": "[concat(resourceGroup().id,'/providers/','Microsoft.Storage/storageAccounts/', variables('storageAcct_name'))]"
     },
     "resources": [        
         {
             "type": "Microsoft.KeyVault/vaults",
-            "name": "[parameters('keyvault_name')]",
+            "name": "[variables('keyvault_name')]",
             "apiVersion": "2018-02-14",
             "location": "[variables('overallResourceLocation')]",                                         
             "properties": {
@@ -43,7 +49,7 @@
                 "accessPolicies": [
                     {
                         "tenantId":"[variables('tenantId')]",
-                        "objectId": "[parameters('objectId')]",
+                        "objectId": "[variables('objectId')]",
                         "permissions":{}                                             
                     }
                 ],
@@ -61,7 +67,7 @@
                 "tier": "Standard"
             },
             "kind": "StorageV2",
-            "name": "[parameters('storageAcct_name')]",
+            "name": "[variables('storageAcct_name')]",
             "apiVersion": "2018-07-01",
             "location": "[variables('overallResourceLocation')]",                                    
             "properties": {
@@ -108,16 +114,46 @@
         {
             "type": "Microsoft.Web/sites",
             "kind": "functionapp",
-            "name": "[parameters('function_name')]",
+            "name": "[variables('function_name')]",
             "apiVersion": "2016-08-01",
             "location": "[variables('overallResourceLocation')]",            
             "scale": null,
             "properties": {
                 "enabled": true,                
-                "serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('appSvcPlan_name'))]"              
+                "serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('appSvcPlan_name'))]",
+                "siteConfig":
+                {
+                    "appSettings":[
+                        {
+                            "name": "AzureWebJobsDashboard",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAcct_name'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "AzureWebJobsStorage",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAcct_name'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAcct_name'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name":"KeyvaultedStorageConnection",
+                            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAcct_name'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1)]"
+                        },
+                        {
+                            "name": "WEBSITE_CONTENTSHARE",
+                            "value": "[toLower(variables('function_name'))]"
+                        },
+                        {
+                            "name": "FUNCTIONS_EXTENSION_VERSION",
+                            "value": "~2"
+                        }
+                    ]
+                }
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms/', parameters('appSvcPlan_name'))]"
+                "[resourceId('Microsoft.Web/serverfarms/', parameters('appSvcPlan_name'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAcct_name'))]"
             ]
         }
     ]
