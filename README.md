@@ -28,6 +28,8 @@ Why? Because it's an extra step in the development cycle. Why go through the has
 
 Just like why would I exercise when I could sit around, eat Pringles, and watch re-runs of SpongeBob SquarePants? What are the odds that I'm going to die of a heart attack today?
 
+![watching spongebob](https://res.cloudinary.com/code-mill-technologies-inc/image/upload/bo_1px_solid_rgb:000000,c_scale,h_500/v1552429919/PNG_image-EF444747D594-1_si76os.png)
+
 Well ... eventually luck runs out. Someday, something bad will happen to my app's secrets even if the app doesn't get cracked (like I commit the secrets file to GitHub). Just like someday I'll regret skipping all of those workouts to watch marathons of the Golden Girls. (Lol ... like that would ever be a regret.)
 
 But there has to be a way ... there has to be a way to keep the app's secrets safe, all the while following best practices, _and_ not making our lives too difficult ... right? Right?
