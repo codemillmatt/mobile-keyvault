@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 using KeyVault;
 using Newtonsoft.Json;
 
-[assembly: Xamarin.Forms.Dependency(typeof(DataFromFunctionService))]
+//[assembly: Xamarin.Forms.Dependency(typeof(DataFromFunctionService))]
 namespace KeyVault
 {
     public class DataFromFunctionService : IDataService
