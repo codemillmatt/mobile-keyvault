@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Microsoft.WindowsAzure.Storage.Auth;
-using Microsoft.WindowsAzure.Storage.Table;
-using Microsoft.WindowsAzure.Storage;
+using Microsoft.Azure.Cosmos.Table;
+
 using System.Threading.Tasks;
+using System.Linq;
 using KeyVault;
 
-//[assembly: Xamarin.Forms.Dependency(typeof(DataService))]
+[assembly: Xamarin.Forms.Dependency(typeof(DataFromTableService))]
 namespace KeyVault
 {
     public class DataFromTableService : IDataService
     {
         public async Task<List<TopSecret>> GetSecretData()
         {
-            var creds = new StorageCredentials("kvmobilestorage", "YOUR KEY HERE!");
+            var creds = new StorageCredentials("kvmobilestorage", "YOUR KEY HERE");
             var cloudStorAcct = new CloudStorageAccount(creds, "core.windows.net", true);
 
             var tableClient = cloudStorAcct.CreateCloudTableClient();
@@ -23,9 +23,15 @@ namespace KeyVault
 
             var tableQuery = new TableQuery<TopSecret>();
 
-            var tableContents = await table.ExecuteQuerySegmentedAsync(tableQuery, null);
+            var tc = await table.ExecuteQuerySegmentedAsync(tableQuery, null);
 
-            return tableContents.Results;
+            return tc.Results;
         }
+
+        //public async Task<List<TopSecret>> GetSecretData()
+        //{
+        //    var creds = new Microsoft.Azure.Cosmos.Table.StorageCredentials("kvmobilestorage", "");
+        //    var storageAcct = new Microsoft.Azure.Cosmos.Table.CloudStorageAccount(
+        //}
     }
 }
