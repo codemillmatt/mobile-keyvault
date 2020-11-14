@@ -6,13 +6,13 @@ And I aim to show you how to do just that with this sample!
 
 ## Deployment Instructions
 
-So ... if you want to follow along, step by step - go ahead and create a [free Azure subscription here](https://azure.microsoft.com/free?WT.mc_id=keyvaultmobiledont-github-masoucou), if you don't already have one.
+So ... if you want to follow along, step by step - go ahead and create a [free Azure subscription here](https://azure.microsoft.com/free?WT.mc_id=mobile-0000-masoucou), if you don't already have one.
 
 Hit this button and all the resources will be deployed for you!
 
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
 
-You'll still have to deploy the Functions app. So go ahead and clone this repo. All of the Functions code can be found in the `src\functions` folder. Build it and and follow [these instructions](https://docs.microsoft.com/azure/azure-functions/deployment-zip-push?WT.mc_id=keyvaultmobiledont-github-masoucou) to deploy it to the Functions app you created above.
+You'll still have to deploy the Functions app. So go ahead and clone this repo. All of the Functions code can be found in the `src\functions` folder. Build it and and follow [these instructions](https://docs.microsoft.com/azure/azure-functions/deployment-zip-push?WT.mc_id=mobile-0000-masoucou) to deploy it to the Functions app you created above.
 
 The Xamarin app, located in the `src\mobile` folder will build A-OK. Load it up in Visual Studio or Visual Studio for Mac, and you'll be on your way.
 
@@ -36,7 +36,7 @@ But there has to be a way ... there has to be a way to keep the app's secrets sa
 
 ## Enter Azure Keyvault
 
-[Azure Keyvault](https://docs.microsoft.com/azure/key-vault/key-vault-overview?WT.mc_id=keyvaultmobiledont-github-masoucou) provides a centralized place to store not only your application's secrets, but also can be used for key and [certificate management](https://docs.microsoft.com/azure/key-vault/certificate-scenarios?WT.mc_id=keyvaultmobiledont-github-masoucou) too.
+[Azure Keyvault](https://docs.microsoft.com/azure/key-vault/key-vault-overview?WT.mc_id=mobile-0000-masoucou) provides a centralized place to store not only your application's secrets, but also can be used for key and [certificate management](https://docs.microsoft.com/azure/key-vault/certificate-scenarios?WT.mc_id=mobile-0000-masoucou) too.
 
 > Keyvault puts all secrets in one spot ... almost as good as a plain text file, right? 😉
 
@@ -50,13 +50,13 @@ You also can disable keys, set activation and deactivation dates.
 
 And each secret in Keyvault gets its own URI which it can be referenced by.
 
-So it's cool, right? Application secrets in a single spot, encryption by default, and there are even [Microsoft provided SDKs](https://docs.microsoft.com/dotnet/api/overview/azure/key-vault?WT.mc_id=keyvaultmobiledont-github-masoucou) to get at them.
+So it's cool, right? Application secrets in a single spot, encryption by default, and there are even [Microsoft provided SDKs](https://docs.microsoft.com/dotnet/api/overview/azure/key-vault?WT.mc_id=mobile-0000-masoucou) to get at them.
 
 Done and done.
 
 ## Let's Use Keyvault!
 
-So I have an app that pulls some data from [Azure Table storage](https://docs.microsoft.com/azure/cosmos-db/table-storage-overview?WT.mc_id=keyvaultmobiledont-github-masoucou).
+So I have an app that pulls some data from [Azure Table storage](https://docs.microsoft.com/azure/cosmos-db/table-storage-overview?WT.mc_id=mobile-0000-masoucou).
 
 It's a Xamarin.Forms app and it displays the data it finds in the Table in a `ListView` - it looks like this:
 
@@ -72,9 +72,9 @@ The fix should be fairly easy ... add the API key for Azure Storage to Keyvault,
 
 ### So Let's Add The Secret!
 
-[Adding the secret in Keyvault](https://docs.microsoft.com/azure/key-vault/quick-create-portal?WT.mc_id=keyvaultmobiledont-github-masoucou) is easy, easy, easy! (As an aside, don't you hate when people say something is easy? Everything's easy when you already know how to do it! So let's try it again....)
+[Adding the secret in Keyvault](https://docs.microsoft.com/azure/key-vault/quick-create-portal?WT.mc_id=mobile-0000-masoucou) is easy, easy, easy! (As an aside, don't you hate when people say something is easy? Everything's easy when you already know how to do it! So let's try it again....)
 
-[Adding the secret in Keyvault](https://docs.microsoft.com/azure/key-vault/quick-create-portal?WT.mc_id=keyvaultmobiledont-github-masoucou) isn't too bad!
+[Adding the secret in Keyvault](https://docs.microsoft.com/azure/key-vault/quick-create-portal?WT.mc_id=mobile-0000-masoucou) isn't too bad!
 
 Open up your Keyvault in the portal, go to the `Secrets` option then the `Generate/Import` button.
 
@@ -96,7 +96,7 @@ You see, we want to keep all app secrets off the device if possible. Even if the
 
 To solve this particular conumdrum... we're still going to take advantage of Keyvault and all it has to offer and put the Azure Storage API key in there.
 
-But instead of having the mobile app directly access the Table storage, we're going to have an [Azure Function](https://docs.microsoft.com/azure/azure-functions/functions-overview?WT.mc_id=keyvaultmobiledont-github-masoucou) do that.
+But instead of having the mobile app directly access the Table storage, we're going to have an [Azure Function](https://docs.microsoft.com/azure/azure-functions/functions-overview?WT.mc_id=mobile-0000-masoucou) do that.
 
 This then gives us several benefits.
 
@@ -104,7 +104,7 @@ This then gives us several benefits.
 2. Keyvault is accessed completely over the Azure backbone - no public internet - and same for Azure storage. _Fast!_
 3. We'll end up with an API that can be used in more places than the mobile app.
 
-OK good ... we're going to use [Function-Table storage bindings](https://docs.microsoft.com/azure/azure-functions/functions-bindings-storage-table?WT.mc_id=keyvaultmobiledont-github-masoucou) to get at the data. And the mobile app will call that Function.
+OK good ... we're going to use [Function-Table storage bindings](https://docs.microsoft.com/azure/azure-functions/functions-bindings-storage-table?WT.mc_id=mobile-0000-masoucou) to get at the data. And the mobile app will call that Function.
 
 But how does the Function access Keyvault to retrieve the Azure Storage connection string?
 
@@ -112,11 +112,11 @@ Hardcoding Keyvault's credentials into the Function's app settings would kind of
 
 So how does Azure Functions communicate to Azure Keyvault ... without the hardcoded credentials?
 
-Through the wonders of the [Managed Identity](https://docs.microsoft.com/azure/app-service/overview-managed-identity?WT.mc_id=keyvaultmobiledont-github-masoucou).
+Through the wonders of the [Managed Identity](https://docs.microsoft.com/azure/app-service/overview-managed-identity?WT.mc_id=mobile-0000-masoucou).
 
 ## Managed Identity
 
-So remember when I said that access to the Keyvault is controlled through [Active Directory](https://docs.microsoft.com/azure/key-vault/key-vault-secure-your-key-vault?WT.mc_id=keyvaultmobiledont-github-masoucou)?
+So remember when I said that access to the Keyvault is controlled through [Active Directory](https://docs.microsoft.com/azure/key-vault/key-vault-secure-your-key-vault?WT.mc_id=mobile-0000-masoucou)?
 
 It turns out that it's pretty straightforward to make your Function App a member of the Active Directory. And once it's Active Directory-izied you can grant the Function App access to Key Vault as easily as you can grant access to a person that's in Active Directory.
 
@@ -124,7 +124,7 @@ And this is what's known as Managed Identity.
 
 ### Active Directory-izing Your Function App
 
-This [same process](https://docs.microsoft.com/en-us/azure/app-service/overview-managed-identity?WT.mc_id=keyvaultmobiledont-github-masoucou) goes for any App service.
+This [same process](https://docs.microsoft.com/azure/app-service/overview-managed-identity?WT.mc_id=mobile-0000-masoucou) goes for any App service.
 
 It's really kinda anti-climatic.
 
@@ -164,7 +164,7 @@ And then you're set.
 
 ## Getting the Function to Talk to Keyvault
 
-Now to get the [Function to use Keyvault](https://docs.microsoft.com/azure/app-service/app-service-key-vault-references?WT.mc_id=keyvaultmobiledont-github-masoucou). The code looks like this:
+Now to get the [Function to use Keyvault](https://docs.microsoft.com/azure/app-service/app-service-key-vault-references?WT.mc_id=mobile-0000-masoucou). The code looks like this:
 
 <script src="https://gist.github.com/codemillmatt/ae87d15286ae73c01db97ae830a043ae.js"></script>
 
@@ -215,7 +215,7 @@ Now if you'll excuse me - I think there's another rerun of SpongeBob about to ai
 
 ### A Quick Postscript - Or Using a SAS On Device
 
-Why not use a [Storage Access Signature (SAS)](https://docs.microsoft.com/azure/storage/common/storage-dotnet-shared-access-signature-part-1?WT.mc_id=keyvaultmobiledont-github-masoucou) to access the Azure Storage Account? Well, from the mobile device that could totally have been done. And with that I could have still used the .NET Storage SDK.
+Why not use a [Storage Access Signature (SAS)](https://docs.microsoft.com/azure/storage/common/storage-dotnet-shared-access-signature-part-1?WT.mc_id=mobile-0000-masoucou) to access the Azure Storage Account? Well, from the mobile device that could totally have been done. And with that I could have still used the .NET Storage SDK.
 
 However, to generate that SAS, I would still have needed to get direct access to the Storage account through the full connection string somehow. And that would be done in the same manner as above. Except instead of returning data, the Function would have returned an SAS token.
 
